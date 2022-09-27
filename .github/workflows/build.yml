@@ -1,0 +1,36 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+env:
+  BULD_NAME: logserver
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+
+      - uses: actions/checkout@v3
+
+      - name: Build
+        run: docker build -t ${{env.BULD_NAME}} .
+
+      - name: Copy files
+        run: docker run --rm --entrypoint cat ${{env.BULD_NAME}} ./build/${{env.BULD_NAME}}.bin > ./${{env.BULD_NAME}}.bin
+
+      - name: Artifact
+        run: |
+          mkdir build
+          cp ./${{env.BULD_NAME}}.bin build/${{env.BULD_NAME}}.bin
+        
+      - name: Publish Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: ./build

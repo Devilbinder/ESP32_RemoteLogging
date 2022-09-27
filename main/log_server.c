@@ -19,7 +19,6 @@ int sock_log(const char* string, va_list list){
     char log_str[1024];
     memset(log_str,0,sizeof(log_str));
     int len = vsnprintf(log_str,sizeof(log_str),string,list);
-    // int len = snprintf(log_str,sizeof(log_str),"TEST\n\r");
 
     for(int i = 0; i < len; i++){
         xQueueSend(log_q,&log_str[i],10);
@@ -135,7 +134,7 @@ static void tcp_server_task(void *pvParameters)
 
         ESP_LOGI(TAG, "Socket listening");
 
-        struct sockaddr_storage source_addr; // Large enough for both IPv4 or IPv6
+        struct sockaddr_storage source_addr;
         uint addr_len = sizeof(source_addr);
         int sock = accept(listen_sock, (struct sockaddr *)&source_addr, &addr_len);
         if (sock < 0) {
